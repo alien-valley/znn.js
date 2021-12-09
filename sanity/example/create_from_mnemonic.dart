@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import "package:hex/hex.dart";
 import 'package:znn_sdk_dart/znn_sdk_dart.dart';
 import 'package:bip39/bip39.dart' as bip39;
 import 'package:path/path.dart' as path;
@@ -9,7 +10,8 @@ Future<void> main() async {
   // mnemonic generated using
   // $ ./cli wallet.createNew password test-keyFile
   // # ./cli -k test-keyFile -p password wallet.dumpMnemonic
-  final String mnemonic = "abstract affair idle position alien fluid board ordinary exist afraid chapter wood wood guide sun walnut crew perfect place firm poverty model side million";
+  final String mnemonic =
+      "abstract affair idle position alien fluid board ordinary exist afraid chapter wood wood guide sun walnut crew perfect place firm poverty model side million";
   final String password = "password";
   final String name = "test-keyFile";
 
@@ -18,8 +20,8 @@ Future<void> main() async {
     throw 'Invalid mnemonic';
   }
 
-  File keyStore = await Zenon().keyStoreManager.createFromMnemonic(mnemonic, password, name);
-  print('keyStore successfully created from mnemonic: ${path.basename(keyStore.path)}');
+  File keyFile = await Zenon().keyStoreManager.createFromMnemonic(mnemonic, password, name);
+  print('keyStore successfully created from mnemonic: ${path.basename(keyFile.path)}');
 
   // possible output of file
   /*
@@ -38,4 +40,7 @@ Future<void> main() async {
        "version":1
     }
    */
+
+  var keyStore = await Zenon().keyStoreManager.readKeyStore(password, keyFile);
+  print("public key is ${HEX.encode(await keyStore.getKeyPair().getPublicKey())}");
 }

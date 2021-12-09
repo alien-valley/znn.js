@@ -16,5 +16,9 @@
   "bugs": {
     "url": "https://github.com/alien-valley/znn.js/issues"
   },
-  "homepage": "https://github.com/alien-valley/znn.js#readme"
+  "homepage": "https://github.com/alien-valley/znn.js#readme",
+  "dependencies": {
+    "bip39": "^3.0.4",
+    "ed25519-hd-key": "^1.2.0"
+  }
 }
