@@ -1,0 +1,20 @@
+{
+  "name": "znn",
+  "version": "1.0.0",
+  "description": "znn.js is a community-backed javascript SDJ for the [zenon.network](https://zenon.network/) project.  The implementation is based on the [official Dart SDK](https://github.com/zenon-network/znn_sdk_dart).",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alien-valley/znn.js.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/alien-valley/znn.js/issues"
+  },
+  "homepage": "https://github.com/alien-valley/znn.js#readme"
+}
