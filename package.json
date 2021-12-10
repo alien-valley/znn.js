@@ -18,7 +18,9 @@
   },
   "homepage": "https://github.com/alien-valley/znn.js#readme",
   "dependencies": {
+    "bech32": "^2.0.0",
     "bip39": "^3.0.4",
-    "ed25519-hd-key": "^1.2.0"
+    "ed25519-hd-key": "^1.2.0",
+    "sha3": "^2.1.4"
   }
 }
