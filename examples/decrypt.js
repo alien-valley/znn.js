@@ -18,8 +18,7 @@ async function main() {
         "version": 1
     };
 
-    const keyFile = new KeyFile(keyFileJ);
-    const entropy = await keyFile.decrypt(password);
+    const entropy = await KeyFile.Decrypt(keyFileJ, password);
     console.log(`entropy is ${entropy.toString('hex')}`);
     const keyPair = KeyPair.FromEntropy(entropy);
     const address = keyPair.address();
