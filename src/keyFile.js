@@ -16,6 +16,7 @@ const aes256gcm = (key) => {
         // See: e.g. https://csrc.nist.gov/publications/detail/sp/800-38d/final
         const nonce = new Buffer.from(crypto.randomBytes(12), 'utf8');
         const cipher = crypto.createCipheriv(ALGO, key, nonce);
+        cipher.setAAD(new Buffer.from("zenon", 'utf8'))
 
         // Hint: Larger inputs (it's GCM, after all!) should use the stream API
         let enc = cipher.update(str, 'utf8', 'hex');
@@ -25,8 +26,14 @@ const aes256gcm = (key) => {
     };
 
     // decrypt decodes base64-encoded ciphertext into a utf8-encoded string
-    const decrypt = (enc, iv) => {
-        return crypto.createDecipheriv(ALGO, key, iv).update(enc);
+    const decrypt = (enc, iv, authTag) => {
+        const decipher = crypto.createDecipheriv(ALGO, key, iv);
+        decipher.setAAD(new Buffer.from("zenon", 'utf8'))
+        decipher.setAuthTag(authTag);
+
+        let str = decipher.update(enc, undefined, 'hex');
+        str += decipher.final('hex');
+        return new Buffer.from(str, 'hex');
     };
 
     return {
@@ -77,8 +84,9 @@ class KeyFile {
 
         const aesCipher = aes256gcm(key.hash);
         const entropy = aesCipher.decrypt(
-            Buffer.from(encrypted, 'hex'),
+            Buffer.from(encrypted.substr(0, 64), 'hex'),
             Buffer.from(aesNonce, 'hex'),
+            Buffer.from(encrypted.substr(64, 32), 'hex'),
         ).subarray(0, 32);
 
         const kp = KeyPair.FromEntropy(entropy);
