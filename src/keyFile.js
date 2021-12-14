@@ -20,6 +20,7 @@ const aes256gcm = (key) => {
         // Hint: Larger inputs (it's GCM, after all!) should use the stream API
         let enc = cipher.update(str, 'utf8', 'hex');
         enc += cipher.final('hex');
+        enc += cipher.getAuthTag().toString('hex')
         return [enc, nonce];
     };
 
