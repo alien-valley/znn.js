@@ -84,9 +84,9 @@ class KeyFile {
 
         const aesCipher = aes256gcm(key.hash);
         const entropy = aesCipher.decrypt(
-            Buffer.from(encrypted.substr(0, 64), 'hex'),
+            Buffer.from(encrypted.substr(0, encrypted.length - 32), 'hex'),
             Buffer.from(aesNonce, 'hex'),
-            Buffer.from(encrypted.substr(64, 32), 'hex'),
+            Buffer.from(encrypted.substr(encrypted.length - 32, 32), 'hex'),
         ).subarray(0, 32);
 
         const kp = KeyPair.FromEntropy(entropy);
