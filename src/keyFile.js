@@ -1,5 +1,5 @@
 const argon2 = require('argon2-browser');
-const crypto = require('crypto');
+const crypto = require('crypto-browserify');
 const KeyPair = require('./keyPair')
 
 // https://gist.github.com/rjz/15baffeab434b8125ca4d783f4116d81

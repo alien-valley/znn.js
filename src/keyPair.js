@@ -2,7 +2,7 @@ const {getPublicKey, derivePath} = require("ed25519-hd-key");
 const {SHA3} = require("sha3");
 const bip39 = require("bip39");
 
-const Address = require('./address.js')
+const {Address} = require('./address.js')
 
 class KeyPair {
     constructor(privateKey) {

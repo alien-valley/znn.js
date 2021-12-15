@@ -1,6 +1,6 @@
 const bip39 = require('bip39');
 
-const Address = require('../src/address.js')
+const {Address} = require('../src/address.js')
 const KeyPair = require('../src/keyPair.js')
 
 // target is to obtain the baseAddress from the keyFile from the mnemonic
