@@ -23,5 +23,5 @@ const EmptyAddress = Address.Parse("z1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqsggv2f");
 
 module.exports = {
     Address,
-    EmptyAddress
+    emptyAddress: EmptyAddress
 };

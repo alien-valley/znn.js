@@ -1,17 +1,28 @@
-const {Address, EmptyAddress} = require("./address")
+const {Address, emptyAddress} = require("./address")
 const {TokenStandard, znnZts, qsrZts, emptyZts} = require("./tokenStandard")
 const KeyFile = require("./keyFile")
 const KeyPair = require("./keyPair")
-const Hash = require("./hash")
+const {Hash, emptyHash} = require("./hash")
+const {HashHeight, emptyHashHeight} = require("./hashHeight")
 
 module.exports = {
+    // address
     Address,
-    EmptyAddress,
-    KeyFile,
-    KeyPair,
-    Hash,
+    emptyAddress,
+    // tokenStandard
     TokenStandard,
     znnZts,
     qsrZts,
-    emptyZts
+    emptyZts,
+    // keyFile
+    KeyFile,
+    // keyPair
+    KeyPair,
+    // hash
+    Hash,
+    emptyHash,
+    // hashHeight
+    HashHeight,
+    emptyHashHeight,
+
 }

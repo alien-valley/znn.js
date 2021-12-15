@@ -18,4 +18,7 @@ class Hash {
     }
 }
 
-module.exports = Hash;
+module.exports = {
+    Hash,
+    emptyHash: Hash.Parse("00000000000000000000000000000000"),
+};
