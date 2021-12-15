@@ -1,2 +1,43 @@
-Use console to play with znn sdk
 <script src="../build/bundle.js"></script>
+
+<input type="password" id="password" value=""/><br/>
+<input type="file" id="selectFiles" value="Import"/><br/>
+<button id="import">Import</button>
+
+<div id="messages"></div>
+
+<script>
+    document.getElementById('import').onclick = async function () {
+        var files = document.getElementById('selectFiles').files;
+        if (files.length <= 0) {
+            return false;
+        }
+
+        var fr = new FileReader();
+        fr.onload = async function (e) {
+            var result = JSON.parse(e.target.result);
+            var password = document.getElementById('password').value;
+            var messages = document.getElementById('messages');
+
+            messages.innerText = "decrypting ...";
+
+            let entropy;
+            try {
+                entropy = await znn.KeyFile.Decrypt(result, password);
+            } catch (e) {
+                if (e.toString() === "Error: Unsupported state or unable to authenticate data") {
+                    messages.innerText = `failed to decrypt: invalid password`;
+                } else {
+                    messages.innerText = `failed to decrypt ${e}`;
+                }
+                return;
+            }
+
+            const keyPair = znn.KeyPair.FromEntropy(entropy);
+            const address = keyPair.address();
+
+            messages.innerText = `address is ${address.toString()}`;
+        }
+        fr.readAsText(files.item(0));
+    };
+</script>
