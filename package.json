@@ -4,7 +4,8 @@
   "description": "znn.js is a community-backed javascript SDJ for the [zenon.network](https://zenon.network/) project.  The implementation is based on the [official Dart SDK](https://github.com/zenon-network/znn_sdk_dart).",
   "main": "index.js",
   "scripts": {
-    "webpack": "webpack"
+    "webpack": "webpack",
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -28,6 +29,7 @@
     "sha3": "^2.1.4"
   },
   "devDependencies": {
+    "jest": "^27.4.5",
     "stream-browserify": "^3.0.0",
     "webpack": "^5.65.0",
     "webpack-cli": "^4.9.1"
