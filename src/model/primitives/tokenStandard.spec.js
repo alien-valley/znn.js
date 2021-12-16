@@ -1,4 +1,4 @@
-const {TokenStandard, znnZts, qsrZts, emptyZts} = require("./tokenStandard")
+const {znnZts, qsrZts, emptyZts} = require("./tokenStandard")
 
 describe('Token Standard', () => {
     it("correct constants", async () => {

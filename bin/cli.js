@@ -1,5 +1,4 @@
-const KeyFile = require('../src/keyFile.js')
-const KeyPair = require('../src/keyPair.js')
+const znn = require("../src/")
 const crypto = require("crypto");
 const fs = require("fs");
 
@@ -15,8 +14,8 @@ async function main() {
             }
 
             let keyFile = JSON.parse(fs.readFileSync(path));
-            const entropy = await KeyFile.Decrypt(keyFile, password)
-            const kp = KeyPair.FromEntropy(entropy)
+            const entropy = await znn.wallet.KeyFile.Decrypt(keyFile, password)
+            const kp = znn.wallet.KeyPair.FromEntropy(entropy)
 
             console.log(`Decrypted key-file with address ${kp.address().toString()}`);
             break;
@@ -28,10 +27,10 @@ async function main() {
 
             // create new entropy
             const newEntropy = new Buffer.from(crypto.randomBytes(32), 'utf8')
-            const newKp = KeyPair.FromEntropy(newEntropy)
+            const newKp = znn.wallet.KeyPair.FromEntropy(newEntropy)
             console.log(`Created a new key-file with address ${newKp.address().toString()}`);
 
-            fs.writeFileSync(path, JSON.stringify(await KeyFile.Encrypt(newEntropy, password)));
+            fs.writeFileSync(path, JSON.stringify(await znn.wallet.KeyFile.Encrypt(newEntropy, password)));
             break;
 
         default:

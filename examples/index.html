@@ -38,7 +38,7 @@
 
             let entropy;
             try {
-                entropy = await znn.KeyFile.Decrypt(result, password);
+                entropy = await znn.wallet.KeyFile.Decrypt(result, password);
             } catch (e) {
                 if (e.toString() === "Error: Unsupported state or unable to authenticate data") {
                     messages.innerText = `failed to decrypt: invalid password`;
@@ -48,7 +48,7 @@
                 return;
             }
 
-            const keyPair = znn.KeyPair.FromEntropy(entropy);
+            const keyPair = znn.wallet.KeyPair.FromEntropy(entropy);
             const address = keyPair.address();
 
             messages.innerText = `address is ${address.toString()}\n`;

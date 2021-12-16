@@ -1,4 +1,4 @@
-const KeyFile = require("./keyFile")
+const {KeyFile} = require("./keyFile")
 
 describe('KeyFile', () => {
     it("decrypts correct 24 mnemonic", async () => {

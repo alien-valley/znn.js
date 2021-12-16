@@ -1,4 +1,4 @@
-const KeyPair = require("./keyPair")
+const {KeyPair} = require("./keyPair")
 
 describe('KeyPair', () => {
     it("from 24 mnemonic", async () => {

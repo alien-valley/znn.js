@@ -1,4 +1,4 @@
-const Hash = require("./hash")
+const {Hash} = require("./hash")
 
 describe('Hash', () => {
     it("digests hello world", async () => {

@@ -1,7 +1,13 @@
-const {Address, emptyAddress} = require("./address")
-const {TokenStandard, emptyZts} = require("./tokenStandard")
-const {Hash, emptyHash} = require("./hash")
-const {HashHeight, emptyHashHeight} = require("./hashHeight")
+const {
+    Address,
+    emptyAddress,
+    TokenStandard,
+    emptyZts,
+    Hash,
+    emptyHash,
+    HashHeight,
+    emptyHashHeight
+} = require("../primitives")
 
 longToBytes = (value) => {
     let b = Buffer.alloc(8);
@@ -84,4 +90,6 @@ class AccountBlock {
     }
 }
 
-module.exports = AccountBlock
+module.exports = {
+    AccountBlock
+}

@@ -1,4 +1,4 @@
-const AccountBlock = require("./accountBlock")
+const {AccountBlock} = require("./accountBlock")
 
 describe('Account Block', () => {
     it("converts ok from JSON", async () => {
