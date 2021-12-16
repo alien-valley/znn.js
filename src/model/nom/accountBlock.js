@@ -65,6 +65,32 @@ class AccountBlock {
         return ab;
     }
 
+    toJson() {
+        return {
+            version: this.version,
+            blockType: this.blockType,
+            fromBlockHash: this.fromBlockHash.toString('hex'),
+            chainIdentifier: this.chainIdentifier,
+            hash: this.hash.toString('hex'),
+            previousHash: this.previousHash.toString('hex'),
+            height: this.height,
+            momentumAcknowledged: {
+                hash: this.momentumAcknowledged.hash.toString('hex'),
+                height: this.momentumAcknowledged.height,
+            },
+            address: this.address.toString(),
+            toAddress: this.toAddress.toString(),
+            amount: this.amount,
+            tokenStandard: this.tokenStandard.toString(),
+            fusedPlasma: this.fusedPlasma,
+            data: this.data.toString('base64'),
+            difficulty: this.difficulty,
+            nonce: this.nonce.toString('hex'),
+            publicKey: this.publicKey.toString('base64'),
+            signature: this.signature.toString('base64'),
+        }
+    };
+
     getHash() {
         return Hash.Digest(
             Buffer.concat([
@@ -90,6 +116,7 @@ class AccountBlock {
     }
 }
 
-module.exports = {
+module
+    .exports = {
     AccountBlock
 }

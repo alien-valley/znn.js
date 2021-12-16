@@ -20,5 +20,5 @@ class Hash {
 
 module.exports = {
     Hash,
-    emptyHash: Hash.Parse("00000000000000000000000000000000"),
+    emptyHash: Hash.Parse("0000000000000000000000000000000000000000000000000000000000000000"),
 };

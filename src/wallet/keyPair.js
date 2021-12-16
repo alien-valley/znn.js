@@ -23,7 +23,7 @@ class KeyPair {
     }
 
     sign(data) {
-        return sign(data, this.privateKey.toString('hex')).then(Buffer.from);
+        return sign(data.core, this.privateKey.toString('hex')).then(Buffer.from);
     }
 }
 

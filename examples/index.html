@@ -8,19 +8,17 @@
 <div id="messages"></div>
 
 <script>
-    request = async function (method, params, callback) {
-        return $.ajax({
-            type: 'POST',
-            // alien-valley node
-            url: 'http://139.177.178.226:35997',
-            crossDomain: true,
-            data: JSON.stringify({"jsonrpc": "2.0", "id": 0, "method": method, "params": params}),
-            beforeSend: function (xhr) {
-                xhr.setRequestHeader("Content-Type", "application/json");
-                xhr.setRequestHeader("Accept", "application/json, text/plain, */*");
-            }, success: callback
-        });
-    }
+    client = async (method, params) => $.ajax({
+        type: 'POST',
+        // alien-valley node
+        url: 'http://139.177.178.226:35997',
+        crossDomain: true,
+        data: JSON.stringify({"jsonrpc": "2.0", "id": 0, "method": method, "params": params}),
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.setRequestHeader("Accept", "application/json, text/plain, */*");
+        }
+    });
 
     document.getElementById('import').onclick = async function () {
         var files = document.getElementById('selectFiles').files;
@@ -49,17 +47,20 @@
             }
 
             const keyPair = znn.wallet.KeyPair.FromEntropy(entropy);
-            const address = keyPair.address();
+            const address = keyPair.address;
 
             messages.innerText = `address is ${address.toString()}\n`;
 
-            request("ledger.getAccountInfoByAddress", [address.toString()], (data) => {
+            // send 1 uZNN to own address
+            // await znn.Send(client, keyPair, address, znn.model.TokenStandard.Parse("zts1znnxxxxxxxxxxxxx9z4ulx"), 1);
+
+            znn.api.ledger.getAccountInfoByAddress(client, address).then(((data) => {
                 messages.innerText += "Balance is\n"
-                for (const zts in data.result.balanceInfoMap) {
-                    const value = data.result.balanceInfoMap[zts];
+                for (const zts in data.balanceInfoMap) {
+                    const value = data.balanceInfoMap[zts];
                     messages.innerText += `${value.balance / Math.pow(10, value.token.decimals)} ${value.token.name}\n`;
                 }
-            });
+            }));
         }
         fr.readAsText(files.item(0));
     };

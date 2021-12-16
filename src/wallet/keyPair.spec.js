@@ -1,4 +1,5 @@
 const {KeyPair} = require("./keyPair")
+const {emptyHash} = require("../model")
 
 describe('KeyPair', () => {
     it("from 24 mnemonic", async () => {
@@ -20,4 +21,10 @@ describe('KeyPair', () => {
         const entropy = Buffer.from("bbefd88e1ff3f673d24da98b51f04ee7", "hex");
         expect(KeyPair.FromEntropy(entropy).address.toString()).toEqual("z1qrf825tea0hha086vjnn4dhpl5wsdcesktxh5x")
     });
+
+    it ("signature length", async () => {
+        const entropy = Buffer.from("bbefd88e1ff3f673d24da98b51f04ee7", "hex");
+        const kp = KeyPair.FromEntropy(entropy);
+        expect((await kp.sign(emptyHash)).toString('base64').length).toEqual(88);
+    })
 });
