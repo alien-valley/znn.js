@@ -1,6 +1,4 @@
 const KeyFile = require("./keyFile")
-const KeyPair = require("../src/keyPair.js");
-const bip39 = require("bip39");
 
 describe('KeyFile', () => {
     it("decrypts correct 24 mnemonic", async () => {
@@ -22,8 +20,6 @@ describe('KeyFile', () => {
 
         const entropy = await KeyFile.Decrypt(json, password);
         expect(entropy.toString("hex")).toEqual("00e089c2d43064b3462ce24fc09099fe9fd2cf3657b6335462972baa911d31fc")
-        expect(bip39.entropyToMnemonic(entropy)).toEqual("abstract affair idle position alien fluid board ordinary exist afraid chapter wood wood guide sun walnut crew perfect place firm poverty model side million");
-        expect(KeyPair.FromEntropy(entropy).address().toString()).toEqual("z1qq9n7fpaqd8lpcljandzmx4xtku9w4ftwyg0mq");
     });
 
     it("decrypts correct 12 mnemonic", async () => {
@@ -44,8 +40,6 @@ describe('KeyFile', () => {
 
         const entropy = await KeyFile.Decrypt(json, password);
         expect(entropy.toString("hex")).toEqual("bbefd88e1ff3f673d24da98b51f04ee7")
-        expect(bip39.entropyToMnemonic(entropy)).toEqual("room learn castle divide disorder delay empty release mercy moon beauty solar");
-        expect(KeyPair.FromEntropy(entropy).address().toString()).toEqual("z1qrf825tea0hha086vjnn4dhpl5wsdcesktxh5x");
     })
 
     it("encrypts correct 24 mnemonic", async () => {
