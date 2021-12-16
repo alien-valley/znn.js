@@ -54,13 +54,25 @@
             // send 1 uZNN to own address
             // await znn.Send(client, keyPair, address, znn.model.TokenStandard.Parse("zts1znnxxxxxxxxxxxxx9z4ulx"), 1);
 
-            znn.api.ledger.getAccountInfoByAddress(client, address).then(((data) => {
+            // print balance list
+            znn.api.ledger.getAccountInfoByAddress(client, address).then((data) => {
                 messages.innerText += "Balance is\n"
                 for (const zts in data.balanceInfoMap) {
                     const value = data.balanceInfoMap[zts];
                     messages.innerText += `${value.balance / Math.pow(10, value.token.decimals)} ${value.token.name}\n`;
                 }
-            }));
+            });
+
+            // auto receive
+            // znn.api.ledger.getUnreceivedBlocksByAddress(client, address, 0, 10).then(async (data) => {
+            //     messages.innerText += "Unreceived blocks\n"
+            //     for (let index in data.list) {
+            //         const block = data.list[index];
+            //         const hash = znn.model.Hash.Parse(block.hash);
+            //         messages.innerText += `unreceived ${hash.toString()}\n`;
+            //         await znn.Receive(client, keyPair, hash);
+            //     }
+            // });
         }
         fr.readAsText(files.item(0));
     };

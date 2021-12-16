@@ -13,6 +13,10 @@ const getAccountInfoByAddress = (client, address) => {
     return wrap(client("ledger.getAccountInfoByAddress", [address.toString()]));
 };
 
+const getUnreceivedBlocksByAddress = (client, address, pageSize, pageIndex) => {
+    return wrap(client("ledger.getUnreceivedBlocksByAddress", [address.toString(), pageSize, pageIndex]));
+};
+
 const getFrontierMomentum = (client) => {
     return wrap(client("ledger.getFrontierMomentum", []));
 };
@@ -21,5 +25,6 @@ module.exports = {
     publishRawTransaction,
     getAccountInfoByAddress,
     getFrontierBlock,
+    getUnreceivedBlocksByAddress,
     getFrontierMomentum,
 }
