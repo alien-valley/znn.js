@@ -10,12 +10,19 @@ class Address {
     }
 
     static Parse(str) {
-        const {prefix, words} = bech32.decode(str);
-        let extractedCore = new Buffer.from(bech32.fromWords(words));
-        if (prefix !== 'z') {
-            throw `invalid prefix ${prefix} should be 'z'`
+        try {
+            const {prefix, words} = bech32.decode(str);
+            let extractedCore = new Buffer.from(bech32.fromWords(words));
+            if (prefix !== 'z') {
+                throw `invalid prefix ${prefix}; should be 'z'`
+            }
+            if (extractedCore.length !== 20) {
+                throw `invalid length ${extractedCore.length}; should be 20`;
+            }
+            return new Address(extractedCore)
+        } catch (e) {
+            throw `failed to parse Address. ${e.toString()}`
         }
-        return new Address(extractedCore)
     }
 }
 
