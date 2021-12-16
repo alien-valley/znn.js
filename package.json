@@ -26,6 +26,7 @@
     "crypto": "^1.0.1",
     "crypto-browserify": "^3.12.0",
     "ed25519-hd-key": "^1.2.0",
+    "noble-ed25519": "^1.2.6",
     "sha3": "^2.1.4"
   },
   "devDependencies": {

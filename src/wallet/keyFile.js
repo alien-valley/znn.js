@@ -90,7 +90,7 @@ class KeyFile {
         ).subarray(0, 32);
 
         const kp = KeyPair.FromEntropy(entropy);
-        let baseAddress = kp.address();
+        let baseAddress = kp.address;
 
         if (baseAddress.toString() !== givenBaseAddress) {
             throw "invalid base address in keyFile";
@@ -102,7 +102,7 @@ class KeyFile {
     // returns encrypted JSON
     static async Encrypt(entropy, password) {
         const kp = KeyPair.FromEntropy(entropy);
-        let baseAddress = kp.address();
+        let baseAddress = kp.address;
 
         // generate new salt, as hex string
         let salt = new Buffer.from(crypto.randomBytes(16), 'utf8')
