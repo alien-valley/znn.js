@@ -17,7 +17,7 @@ async function main() {
             const entropy = await znn.wallet.KeyFile.Decrypt(keyFile, password)
             const kp = znn.wallet.KeyPair.FromEntropy(entropy)
 
-            console.log(`Decrypted key-file with address ${kp.address().toString()}`);
+            console.log(`Decrypted key-file with address ${kp.address.toString()}`);
             break;
 
         case 'new':
@@ -28,13 +28,13 @@ async function main() {
             // create new entropy
             const newEntropy = new Buffer.from(crypto.randomBytes(32), 'utf8')
             const newKp = znn.wallet.KeyPair.FromEntropy(newEntropy)
-            console.log(`Created a new key-file with address ${newKp.address().toString()}`);
+            console.log(`Created a new key-file with address ${newKp.address.toString()}`);
 
             fs.writeFileSync(path, JSON.stringify(await znn.wallet.KeyFile.Encrypt(newEntropy, password)));
             break;
 
         default:
-            console.log('unknown');
+            console.log('unknown command');
             console.log('');
             console.log('Options:');
             console.log("  decrypt 'password' path");
