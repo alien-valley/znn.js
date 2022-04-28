@@ -1,5 +1,9 @@
-const plasma = require("./plasma")
-
 module.exports = {
-    plasma,
+    pillar: require("./pillar"),
+    plasma: require("./plasma"),
+    sentinel: require("./sentinel"),
+    stake: require("./stake"),
+    swap: require("./swap"),
+    token: require("./token"),
+    accelerator: require("./accelerator")
 }

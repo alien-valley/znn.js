@@ -1,7 +1,5 @@
-const embedded = require("./embedded")
-const ledger = require("./ledger")
-
 module.exports = {
-    embedded,
-    ledger,
+    embedded: require("./embedded"),
+    ledger: require("./ledger"),
+    stats: require("./stats")
 }
