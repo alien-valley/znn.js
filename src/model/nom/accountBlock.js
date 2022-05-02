@@ -65,6 +65,16 @@ class AccountBlock {
         return ab;
     }
 
+    static ContractCall(contractAddress, zts, amount, data) {
+        const block = new AccountBlock()
+        block.blockType = 2; // userSend
+        block.toAddress = contractAddress;
+        block.tokenStandard = zts;
+        block.amount = amount;
+        block.data = data
+        return block
+    }
+
     toJson() {
         return {
             version: this.version,

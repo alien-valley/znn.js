@@ -60,5 +60,6 @@ const create_wallet = async (password) => {
 module.exports = {
     Send,
     Receive,
+    fastForwardBlock,
     create_wallet
 }

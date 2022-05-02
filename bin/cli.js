@@ -1,11 +1,36 @@
 const znn = require("../src/")
 const crypto = require("crypto");
 const fs = require("fs");
+const axios = require('axios');
+const {plasma} = require("../src/api/embedded");
+const {fastForwardBlock} = require("../src");
+
+const decrypt = async function (password, path) {
+    let keyFile = JSON.parse(fs.readFileSync(path));
+    const entropy = await znn.wallet.KeyFile.Decrypt(keyFile, password)
+    return znn.wallet.KeyPair.FromEntropy(entropy)
+}
 
 async function main() {
-    var args = process.argv.slice(2);
+    const args = process.argv.slice(2);
     let password = args[1];
     let path = args[2];
+    let keyPair, address;
+    let response, entry;
+
+    const client = async function (method, params) {
+        const response = axios.post(
+            'http://139.177.178.226:35997',
+            JSON.stringify({"jsonrpc": "2.0", "id": 0, "method": method, "params": params}),
+            {
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json, text/plain, */*",
+                }
+            }
+        );
+        return (await response).data;
+    }
 
     switch (args[0]) {
         case 'decrypt':
@@ -13,11 +38,8 @@ async function main() {
                 throw "invalid usage; decrypt 'password' path"
             }
 
-            let keyFile = JSON.parse(fs.readFileSync(path));
-            const entropy = await znn.wallet.KeyFile.Decrypt(keyFile, password)
-            const kp = znn.wallet.KeyPair.FromEntropy(entropy)
-
-            console.log(`Decrypted key-file with address ${kp.address.toString()}`);
+            address = (await decrypt(password, path)).address
+            console.log(`Decrypted key-file with address ${address.toString()}`);
             break;
 
         case 'new':
@@ -33,12 +55,67 @@ async function main() {
             fs.writeFileSync(path, JSON.stringify(await znn.wallet.KeyFile.Encrypt(newEntropy, password)));
             break;
 
+        case 'plasma.get':
+            if (args.length !== 3) {
+                throw "invalid usage; plasma.get 'password' path"
+            }
+            address = (await decrypt(password, path)).address
+
+            response = await plasma.get(client, address)
+            console.log(`Plasma for account ${address.toString()}, ${response.currentPlasma}`);
+            break;
+
+        case 'plasma.list':
+            if (args.length !== 3) {
+                throw "invalid usage; plasma.list 'password' path"
+            }
+            address = (await decrypt(password, path)).address
+
+            response = await plasma.getEntriesByAddress(client, address, 0, 10)
+            console.log(`Plasma entries for account ${address.toString()} - number ${JSON.stringify(response.count)}`);
+            for (entry of response.list) {
+                console.log(entry.beneficiary, entry.qsrAmount, entry.id)
+            }
+            break;
+
+        case 'plasma.fuse':
+            if (args.length !== 5) {
+                throw "invalid usage; plasma.fuse 'password' path beneficiary amount"
+            }
+            keyPair = await decrypt(password, path)
+
+            let beneficiary = args[3];
+            let amount = args[4]
+
+            response = await fastForwardBlock(client, keyPair, plasma.fuse({beneficiary, amount: parseInt(amount)}))
+
+            console.log(`Fused plasma for ${beneficiary}; ${JSON.stringify(response)}`);
+            break;
+
+        case 'plasma.cancel':
+            if (args.length !== 4) {
+                throw "invalid usage; plasma.fuse 'password' path id"
+            }
+            keyPair = await decrypt(password, path)
+
+            let id = args[3];
+
+            response = await fastForwardBlock(client, keyPair, plasma.cancel({id}))
+
+            console.log(`Cancel fuse entry with ID ${id}; ${JSON.stringify(response)}`);
+            break;
+
+
         default:
             console.log('unknown command');
             console.log('');
             console.log('Options:');
             console.log("  decrypt 'password' path");
             console.log("  new 'password' path");
+            console.log("  plasma.get 'password' path");
+            console.log("  plasma.list 'password' path");
+            console.log("  plasma.fuse 'password' path beneficiary amount");
+            console.log("  plasma.cancel 'password' id");
     }
 }
 

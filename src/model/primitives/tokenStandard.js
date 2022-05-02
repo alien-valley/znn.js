@@ -24,6 +24,11 @@ class TokenStandard {
             throw `failed to parse TokenStandard. ${e.toString()}`
         }
     }
+
+    // 0xHEX
+    static FromHex(str) {
+        return new TokenStandard(Buffer.from(str.substr(2), 'hex'))
+    }
 }
 
 const znnZts = TokenStandard.Parse("zts1znnxxxxxxxxxxxxx9z4ulx");
