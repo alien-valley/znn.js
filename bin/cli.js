@@ -1,9 +1,9 @@
 const znn = require("../src/")
 const crypto = require("crypto");
 const fs = require("fs");
-const axios = require('axios');
 const {plasma} = require("../src/api/embedded");
 const {fastForwardBlock} = require("../src");
+const {newClient} = require("../src/client");
 
 const decrypt = async function (password, path) {
     let keyFile = JSON.parse(fs.readFileSync(path));
@@ -18,19 +18,8 @@ async function main() {
     let keyPair, address;
     let response, entry;
 
-    const client = async function (method, params) {
-        const response = axios.post(
-            'http://139.177.178.226:35997',
-            JSON.stringify({"jsonrpc": "2.0", "id": 0, "method": method, "params": params}),
-            {
-                headers: {
-                    "Content-Type": "application/json",
-                    "Accept": "application/json, text/plain, */*",
-                }
-            }
-        );
-        return (await response).data;
-    }
+    const client = newClient('http://139.177.178.226:35997')
+    // const client = newClient('ws://139.177.178.226:35998')
 
     switch (args[0]) {
         case 'decrypt':
