@@ -1,7 +1,7 @@
 const znn = require("../src/")
 const crypto = require("crypto");
 const fs = require("fs");
-const {plasma} = require("../src/api/embedded");
+const api = require("../src/api");
 const {fastForwardBlock} = require("../src");
 const {newClient} = require("../src/client");
 
@@ -11,6 +11,10 @@ const decrypt = async function (password, path) {
     return znn.wallet.KeyPair.FromEntropy(entropy)
 }
 
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 async function main() {
     const args = process.argv.slice(2);
     let password = args[1];
@@ -18,8 +22,8 @@ async function main() {
     let keyPair, address;
     let response, entry;
 
-    const client = newClient('http://139.177.178.226:35997')
-    // const client = newClient('ws://139.177.178.226:35998')
+    // const client = newClient('http://139.177.178.226:35997')
+    const client = newClient('ws://139.177.178.226:35998')
 
     switch (args[0]) {
         case 'decrypt':
@@ -50,7 +54,7 @@ async function main() {
             }
             address = (await decrypt(password, path)).address
 
-            response = await plasma.get(client, address)
+            response = await api.embedded.plasma.get(client, address)
             console.log(`Plasma for account ${address.toString()}, ${response.currentPlasma}`);
             break;
 
@@ -60,7 +64,7 @@ async function main() {
             }
             address = (await decrypt(password, path)).address
 
-            response = await plasma.getEntriesByAddress(client, address, 0, 10)
+            response = await api.embedded.plasma.getEntriesByAddress(client, address, 0, 10)
             console.log(`Plasma entries for account ${address.toString()} - number ${JSON.stringify(response.count)}`);
             for (entry of response.list) {
                 console.log(entry.beneficiary, entry.qsrAmount, entry.id)
@@ -76,7 +80,7 @@ async function main() {
             let beneficiary = args[3];
             let amount = args[4]
 
-            response = await fastForwardBlock(client, keyPair, plasma.fuse({beneficiary, amount: parseInt(amount)}))
+            response = await fastForwardBlock(client, keyPair, api.embedded.plasma.fuse({beneficiary, amount: parseInt(amount)}))
 
             console.log(`Fused plasma for ${beneficiary}; ${JSON.stringify(response)}`);
             break;
@@ -89,11 +93,20 @@ async function main() {
 
             let id = args[3];
 
-            response = await fastForwardBlock(client, keyPair, plasma.cancel({id}))
+            response = await fastForwardBlock(client, keyPair, api.embedded.plasma.cancel({id}))
 
             console.log(`Cancel fuse entry with ID ${id}; ${JSON.stringify(response)}`);
             break;
 
+        case 'listen.momentums':
+            if (args.length !== 1) {
+                throw "invalid usage; listen.momentums"
+            }
+
+            response = await api.subscribe.toMomentums(client)
+            for (;;) {
+                await sleep(1000)
+            }
 
         default:
             console.log('unknown command');
@@ -105,6 +118,7 @@ async function main() {
             console.log("  plasma.list 'password' path");
             console.log("  plasma.fuse 'password' path beneficiary amount");
             console.log("  plasma.cancel 'password' id");
+            console.log("  listen.momentums");
     }
 }
 

@@ -1,18 +1,16 @@
-const {unwrapResponse} = require("./utils");
-
 /* This API call will return information about the os. */
 const osInfo = (client) => {
-    return unwrapResponse(client("stats.osInfo", []));
+    return client.request({method: "stats.osInfo", params:[]});
 };
 
 /* This API call will return information about the process. */
 const processInfo = (client) => {
-    return unwrapResponse(client("stats.processInfo", []));
+    return client.request({method: "stats.processInfo", params:[]});
 };
 
 /* This API call will return information about the network. */
 const networkInfo = (client) => {
-    return unwrapResponse(client("stats.networkInfo", []));
+    return client.request({method: "stats.networkInfo", params:[]});
 };
 
 module.exports = {

@@ -1,20 +1,19 @@
-const {unwrapResponse} = require("../utils");
 const {AccountBlock, znnZts, TokenAddress, emptyZts} = require("../../model");
 const {TokenABI} = require("../../embedded");
 
 /* This API call will return a list of all ZTS tokens */
 const getAll = (client, pageIndex, pageSize) => {
-    return unwrapResponse(client('embedded.token.getAll', [pageIndex, pageSize]));
+    return client.request({method: 'embedded.token.getAll', params:[pageIndex, pageSize]});
 }
 
 /* This API call will return the list of ZTS issued by an address */
 const getByOwner = (client, ownerAddress, pageIndex, pageSize) => {
-    return unwrapResponse(client('embedded.token.getByOwner', [ownerAddress, pageIndex, pageSize]));
+    return client.request({method: 'embedded.token.getByOwner', params:[ownerAddress, pageIndex, pageSize]});
 }
 
 /* This API call will return the ZTS with the specified unique identifier */
 const getByZts = (client, zts) => {
-    return unwrapResponse(client('embedded.token.getByZts', [zts]));
+    return client.request({method: 'embedded.token.getByZts', params:[zts]});
 }
 
 const issueToken = ({

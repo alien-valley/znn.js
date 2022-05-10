@@ -1,30 +1,29 @@
-const {unwrapResponse} = require("../utils");
 const {AccountBlock, znnZts, SentinelAddress, emptyZts, qsrZts} = require("../../model");
 const {SentinelABI, CommonABI} = require("../../embedded");
 
 /* This API call will return all the Sentinels registered by an address. */
 const getByOwner = (client, ownerAddress) => {
-    return unwrapResponse(client('embedded.sentinel.getByOwner', [ownerAddress]));
+    return client.request({method: 'embedded.sentinel.getByOwner', params:[ownerAddress]});
 }
 
 /* This API call will return a list of all registered Sentinels. */
 const getAllActive = (client, pageIndex, pageSize) => {
-    return unwrapResponse(client('embedded.sentinel.getAllActive', [pageIndex, pageSize]));
+    return client.request({method: 'embedded.sentinel.getAllActive', params:[pageIndex, pageSize]});
 }
 
 /* This API call will return the amount of QSR the address has deposited in order to create a Sentinel. */
 const getDepositedQsr = (client, ownerAddress) => {
-    return unwrapResponse(client('embedded.sentinel.getDepositedQsr', [ownerAddress]));
+    return client.request({method: 'embedded.sentinel.getDepositedQsr', params:[ownerAddress]});
 }
 
 /* This API call will return the uncollected reward for the specified sentinel. */
 const getUncollectedReward = (client, ownerAddress) => {
-    return unwrapResponse(client('embedded.sentinel.getUncollectedReward', [ownerAddress]));
+    return client.request({method: 'embedded.sentinel.getUncollectedReward', params:[ownerAddress]});
 }
 
 /* This API call will return the uncollected reward for the specified sentinel. */
 const getFrontierRewardByPage = (client, ownerAddress, pageIndex, pageSize) => {
-    return unwrapResponse(client('embedded.sentinel.getFrontierRewardByPage', [ownerAddress, pageIndex, pageSize]));
+    return client.request({method: 'embedded.sentinel.getFrontierRewardByPage', params:[ownerAddress, pageIndex, pageSize]});
 }
 
 const register = ({}) => {

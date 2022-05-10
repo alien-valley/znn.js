@@ -1,30 +1,29 @@
-const {unwrapResponse} = require("../utils");
 const {AccountBlock, AcceleratorAddress, emptyZts, znnZts} = require("../../model");
 const {AcceleratorABI} = require("../../embedded");
 
 /* Get all. */
 const getAll = (client, pageIndex, pageSize) => {
-    return unwrapResponse(client('embedded.accelerator.getAll', [pageIndex, pageSize]));
+    return client.request({method: 'embedded.accelerator.getAll', params:[pageIndex, pageSize]});
 }
 
 /* Get a single project by a given ID. */
 const getProjectById = (client, projectID) => {
-    return unwrapResponse(client('embedded.accelerator.getProjectById', [projectID]));
+    return client.request({method: 'embedded.accelerator.getProjectById', params:[projectID]});
 }
 
 /* Get a single project by a given ID. */
 const getPhaseById = (client, phaseID) => {
-    return unwrapResponse(client('embedded.accelerator.getPhaseById', [phaseID]));
+    return client.request({method: 'embedded.accelerator.getPhaseById', params:[phaseID]});
 }
 
 /* Get a single project by a given ID. */
 const getPillarVotes = (client, name, hashes) => {
-    return unwrapResponse(client('embedded.accelerator.getPillarVotes', [name, hashes]));
+    return client.request({method: 'embedded.accelerator.getPillarVotes', params:[name, hashes]});
 }
 
 /* Get a single project by a given ID. */
 const getVoteBreakdown = (client, hash) => {
-    return unwrapResponse(client('embedded.accelerator.getVoteBreakdown', [hash]));
+    return client.request({method: 'embedded.accelerator.getVoteBreakdown', params:[hash]});
 }
 
 const createProject = ({name, description, url, znnFundsNeeded, qsrFundsNeeded}) => {

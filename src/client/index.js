@@ -2,10 +2,13 @@ const {RequestManager, HTTPTransport, Client, WebSocketTransport} = require("@op
 
 function fromTransport(transport) {
     const client = new Client(new RequestManager([transport]));
-    return async function (method, params) {
-        const response = client.request({method, params})
-        return {result: response}
-    }
+
+    // TODO @VONSBAK: use custom logic instead of logging notifications
+    client.onNotification((data) => {
+        console.log(JSON.stringify(data.params))
+    })
+
+    return client
 }
 
 const newHTTPClient = function(url) {
