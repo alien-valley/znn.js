@@ -104,6 +104,28 @@ async function main() {
             }
 
             response = await api.subscribe.toMomentums(client)
+            response.onNotification((data) => {
+                console.log(`Received new Momentum! Height:${data[0].height} Hash:${data[0].hash} CurrentTime:${new Date()}`)
+            })
+
+            // never return since the
+            for (;;) {
+                await sleep(1000)
+            }
+
+        case 'listen.allAccountBlocks':
+            if (args.length !== 1) {
+                throw "invalid usage; listen.allAccountBlocks"
+            }
+
+            response = await api.subscribe.toAllAccountBlocks(client)
+            response.onNotification((data) => {
+                for (const block of data) {
+                    console.log(`Received new Account Block! Address:${block.address} Height:${block.height} Hash:${block.hash} CurrentTime:${new Date()}`)
+                }
+            })
+
+            // never return since the
             for (;;) {
                 await sleep(1000)
             }
@@ -119,6 +141,7 @@ async function main() {
             console.log("  plasma.fuse 'password' path beneficiary amount");
             console.log("  plasma.cancel 'password' id");
             console.log("  listen.momentums");
+            console.log("  listen.allAccountBlocks");
     }
 }
 
