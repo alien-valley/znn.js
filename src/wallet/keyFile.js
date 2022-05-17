@@ -1,6 +1,6 @@
 const argon2 = require('argon2-browser');
 const crypto = require('crypto-browserify');
-const {KeyPair} = require('./keyPair')
+const {KeyStore} = require('./keyStore')
 
 // https://gist.github.com/rjz/15baffeab434b8125ca4d783f4116d81
 // Demo implementation of using `aes-256-gcm` with node.js's `crypto` lib.
@@ -89,8 +89,7 @@ class KeyFile {
             Buffer.from(encrypted.substr(encrypted.length - 32, 32), 'hex'),
         ).subarray(0, 32);
 
-        const kp = KeyPair.FromEntropy(entropy);
-        let baseAddress = kp.address;
+        const baseAddress = KeyStore.FromEntropy(entropy).baseAddress;
 
         if (baseAddress.toString() !== givenBaseAddress) {
             throw "invalid base address in keyFile";
@@ -101,8 +100,7 @@ class KeyFile {
 
     // returns encrypted JSON
     static async Encrypt(entropy, password) {
-        const kp = KeyPair.FromEntropy(entropy);
-        let baseAddress = kp.address;
+        const baseAddress = KeyStore.FromEntropy(entropy).baseAddress;
 
         // generate new salt, as hex string
         let salt = new Buffer.from(crypto.randomBytes(16), 'utf8')

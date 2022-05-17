@@ -1,30 +1,22 @@
-const {KeyPair} = require("./keyPair")
+const {KeyStore, KeyPair} = require("./index")
 const {emptyHash} = require("../model")
 
 describe('KeyPair', () => {
-    it("from 24 mnemonic", async () => {
-        const mnemonic = "abstract affair idle position alien fluid board ordinary exist afraid chapter wood wood guide sun walnut crew perfect place firm poverty model side million";
-        expect(KeyPair.FromMnemonic(mnemonic).address.toString()).toEqual("z1qq9n7fpaqd8lpcljandzmx4xtku9w4ftwyg0mq")
-    });
-
-    it("from 12 mnemonic", async () => {
-        const mnemonic = "room learn castle divide disorder delay empty release mercy moon beauty solar";
-        expect(KeyPair.FromMnemonic(mnemonic).address.toString()).toEqual("z1qrf825tea0hha086vjnn4dhpl5wsdcesktxh5x")
-    });
-
-    it("from 24 entropy", async () => {
-        const entropy = Buffer.from("00e089c2d43064b3462ce24fc09099fe9fd2cf3657b6335462972baa911d31fc", "hex");
-        expect(KeyPair.FromEntropy(entropy).address.toString()).toEqual("z1qq9n7fpaqd8lpcljandzmx4xtku9w4ftwyg0mq")
-    });
-
-    it("from 12 entropy", async () => {
+    // signatures are random because they depend on a seed
+    // without setting the seed, there is no way to design a test that checks for a specific signature
+    it("signature length", async () => {
         const entropy = Buffer.from("bbefd88e1ff3f673d24da98b51f04ee7", "hex");
-        expect(KeyPair.FromEntropy(entropy).address.toString()).toEqual("z1qrf825tea0hha086vjnn4dhpl5wsdcesktxh5x")
-    });
-
-    it ("signature length", async () => {
-        const entropy = Buffer.from("bbefd88e1ff3f673d24da98b51f04ee7", "hex");
-        const kp = KeyPair.FromEntropy(entropy);
+        const kp = KeyStore.FromEntropy(entropy).getKeyPair();
         expect((await kp.sign(emptyHash)).toString('base64').length).toEqual(88);
+    })
+
+    it("gets address", async () => {
+        const kp = KeyPair.FromPrivateKey(Buffer.from('f58cb2e1add0382c2004fa8e04895a65a3c755553e60187d697c2e5ab9df67ea', 'hex'))
+        expect(kp.address.toString()).toEqual('z1qq9n7fpaqd8lpcljandzmx4xtku9w4ftwyg0mq')
+    })
+
+    it("gets public key", async () => {
+        const kp = KeyPair.FromPrivateKey(Buffer.from('f58cb2e1add0382c2004fa8e04895a65a3c755553e60187d697c2e5ab9df67ea', 'hex'))
+        expect(kp.publicKey.toString('hex')).toEqual('881967d6529347a07f73ee2c5f0596b1b4bce44b828ac0a1fd77a0c3f1903559')
     })
 });

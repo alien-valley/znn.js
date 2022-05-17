@@ -8,7 +8,7 @@ const {newClient} = require("../src/client");
 const decrypt = async function (password, path) {
     let keyFile = JSON.parse(fs.readFileSync(path));
     const entropy = await znn.wallet.KeyFile.Decrypt(keyFile, password)
-    return znn.wallet.KeyPair.FromEntropy(entropy)
+    return znn.wallet.KeyStore.FromEntropy(entropy).getKeyPair()
 }
 
 function sleep(ms) {
@@ -42,8 +42,8 @@ async function main() {
 
             // create new entropy
             const newEntropy = new Buffer.from(crypto.randomBytes(32), 'utf8')
-            const newKp = znn.wallet.KeyPair.FromEntropy(newEntropy)
-            console.log(`Created a new key-file with address ${newKp.address.toString()}`);
+            const baseAddress = znn.wallet.KeyStore.FromEntropy(newEntropy).baseAddress
+            console.log(`Created a new key-file with address ${baseAddress.toString()}`);
 
             fs.writeFileSync(path, JSON.stringify(await znn.wallet.KeyFile.Encrypt(newEntropy, password)));
             break;
