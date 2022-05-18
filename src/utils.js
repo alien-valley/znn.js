@@ -1,5 +1,4 @@
 const api = require("./api")
-const crypto = require("crypto-browserify")
 const {AccountBlock, HashHeight, Hash} = require("./model")
 
 const fastForwardBlock = async (client, keyPair, block) => {
@@ -51,15 +50,8 @@ const Receive = async (client, keyPair, fromBlockHash) => {
     return fastForwardBlock(client, keyPair, block);
 }
 
-// TODO @VONSBAK: move this into keyStore
-const create_wallet = async (password) => {
-    const newEntropy = new Buffer.from(crypto.randomBytes(32), 'utf8');
-    return await znn.wallet.KeyFile.Encrypt(newEntropy, password);
-}
-
 module.exports = {
     Send,
     Receive,
     fastForwardBlock,
-    create_wallet
 }

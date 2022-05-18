@@ -1,4 +1,5 @@
 const {KeyFile} = require("./keyFile")
+const {KeyStore} = require("./keyStore");
 
 describe('KeyFile', () => {
     it("decrypts correct 24 mnemonic", async () => {
@@ -18,8 +19,8 @@ describe('KeyFile', () => {
             "version": 1
         };
 
-        const entropy = await KeyFile.Decrypt(json, password);
-        expect(entropy.toString("hex")).toEqual("00e089c2d43064b3462ce24fc09099fe9fd2cf3657b6335462972baa911d31fc")
+        const store = await KeyFile.Decrypt(json, password);
+        expect(store.entropy.toString("hex")).toEqual("00e089c2d43064b3462ce24fc09099fe9fd2cf3657b6335462972baa911d31fc")
     });
 
     it("decrypts correct 12 mnemonic", async () => {
@@ -38,25 +39,25 @@ describe('KeyFile', () => {
             }
         ;
 
-        const entropy = await KeyFile.Decrypt(json, password);
-        expect(entropy.toString("hex")).toEqual("bbefd88e1ff3f673d24da98b51f04ee7")
+        const store = await KeyFile.Decrypt(json, password);
+        expect(store.entropy).toEqual("bbefd88e1ff3f673d24da98b51f04ee7")
     })
 
     it("encrypts correct 24 mnemonic", async () => {
         const password = "password";
         const initialEntropy = Buffer.from("00e089c2d43064b3462ce24fc09099fe9fd2cf3657b6335462972baa911d31fc", "hex");
-        const json = await KeyFile.Encrypt(initialEntropy, password);
+        const json = await KeyFile.Encrypt(KeyStore.FromEntropy(initialEntropy), password);
 
-        const finalEntropy = await KeyFile.Decrypt(json, password);
-        expect(finalEntropy).toEqual(initialEntropy);
+        const store = await KeyFile.Decrypt(json, password);
+        expect(store.entropy).toEqual(initialEntropy.toString('hex'));
     })
 
     it("encrypts correct 12 mnemonic", async () => {
         const password = "password";
         const initialEntropy = Buffer.from("bbefd88e1ff3f673d24da98b51f04ee7", "hex");
-        const json = await KeyFile.Encrypt(initialEntropy, password);
+        const json = await KeyFile.Encrypt(KeyStore.FromEntropy(initialEntropy), password);
 
-        const finalEntropy = await KeyFile.Decrypt(json, password);
-        expect(finalEntropy).toEqual(initialEntropy);
+        const store = await KeyFile.Decrypt(json, password);
+        expect(store.entropy).toEqual(initialEntropy.toString('hex'));
     })
 });

@@ -1,15 +1,4 @@
-const znn = require("../src/")
-const crypto = require("crypto");
-const fs = require("fs");
-const api = require("../src/api");
-const {fastForwardBlock} = require("../src");
-const {newClient} = require("../src/client");
-
-const decrypt = async function (password, path) {
-    let keyFile = JSON.parse(fs.readFileSync(path));
-    const entropy = await znn.wallet.KeyFile.Decrypt(keyFile, password)
-    return znn.wallet.KeyStore.FromEntropy(entropy).getKeyPair()
-}
+const {fastForwardBlock, wallet, api, client: c} = require("../src");
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -18,36 +7,15 @@ function sleep(ms) {
 async function main() {
     const args = process.argv.slice(2);
     let password = args[1];
-    let path = args[2];
+    let name = args[2];
+    let store;
     let keyPair, address;
     let response, entry;
 
     // const client = newClient('http://139.177.178.226:35997')
-    const client = newClient('ws://139.177.178.226:35998')
+    const client = c.newClient('ws://139.177.178.226:35998')
 
     switch (args[0]) {
-        case 'decrypt':
-            if (args.length !== 3) {
-                throw "invalid usage; decrypt 'password' path"
-            }
-
-            address = (await decrypt(password, path)).address
-            console.log(`Decrypted key-file with address ${address.toString()}`);
-            break;
-
-        case 'new':
-            if (args.length !== 3) {
-                throw "invalid usage; new 'password' path"
-            }
-
-            // create new entropy
-            const newEntropy = new Buffer.from(crypto.randomBytes(32), 'utf8')
-            const baseAddress = znn.wallet.KeyStore.FromEntropy(newEntropy).baseAddress
-            console.log(`Created a new key-file with address ${baseAddress.toString()}`);
-
-            fs.writeFileSync(path, JSON.stringify(await znn.wallet.KeyFile.Encrypt(newEntropy, password)));
-            break;
-
         case 'plasma.get':
             if (args.length !== 3) {
                 throw "invalid usage; plasma.get 'password' path"
@@ -130,18 +98,46 @@ async function main() {
                 await sleep(1000)
             }
 
+        case 'wallet.decrypt':
+            if (args.length !== 3) {
+                throw "invalid usage; decrypt 'password' name"
+            }
+
+            store = await wallet.manager.read(password, name)
+            console.log(`Decrypted key-file with address ${store.baseAddress.toString()}`);
+            break;
+
+        case 'wallet.new':
+            if (args.length !== 3 && args.length !== 2) {
+                throw "invalid usage; wallet.new 'password' name"
+            }
+
+            store = wallet.KeyStore.Random()
+            // set a name if none was provided
+            if (name === undefined) {
+                name = store.baseAddress.toString()
+            }
+            await wallet.manager.save(store, password, name)
+            console.log(`Created a new key-file with address ${store.baseAddress.toString()} and name ${name}`);
+            break;
+
+        case 'wallet.list':
+            console.log(wallet.manager.list())
+            break;
+
         default:
             console.log('unknown command');
             console.log('');
             console.log('Options:');
-            console.log("  decrypt 'password' path");
-            console.log("  new 'password' path");
             console.log("  plasma.get 'password' path");
             console.log("  plasma.list 'password' path");
             console.log("  plasma.fuse 'password' path beneficiary amount");
             console.log("  plasma.cancel 'password' id");
             console.log("  listen.momentums");
             console.log("  listen.allAccountBlocks");
+            console.log("  wallet.decrypt 'password' name");
+            console.log("  wallet.new 'password' [name]");
+            console.log("  wallet.list");
     }
 }
 

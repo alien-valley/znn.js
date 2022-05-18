@@ -1,6 +1,7 @@
 const bip39 = require("bip39");
 const {derivePath} = require("ed25519-hd-key");
 const {KeyPair} = require("./keyPair");
+const crypto = require("crypto");
 
 class KeyStore {
     constructor(mnemonic) {
@@ -16,6 +17,10 @@ class KeyStore {
 
     static FromEntropy(entropy) {
         return new KeyStore(bip39.entropyToMnemonic(entropy))
+    }
+
+    static Random() {
+        return KeyStore.FromEntropy(new Buffer.from(crypto.randomBytes(32), 'utf8'))
     }
 
     getKeyPair(index = 0) {

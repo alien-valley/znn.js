@@ -42,8 +42,12 @@ const aes256gcm = (key) => {
     };
 };
 
+// KeyFile handles the serialization & encryption of KeyStores
+// the process is compatible with the one from SDK Dart & go-zenon
+// handles both 16 & 32 bit entropy (12 & 24 mnemonic)
+// note: the storage logic of the objects is *not* handled here
 class KeyFile {
-    // returns entropy
+    // transforms (JSON + password) -> store
     static async Decrypt(j, password) {
         // adding some prints in the DART SDK yields
         // key = e85a18546e4a45a09ab1312171b026fd2edd2d7957cae2360264f7425cef71d2
@@ -89,18 +93,18 @@ class KeyFile {
             Buffer.from(encrypted.substr(encrypted.length - 32, 32), 'hex'),
         ).subarray(0, 32);
 
-        const baseAddress = KeyStore.FromEntropy(entropy).baseAddress;
+        const store = KeyStore.FromEntropy(entropy)
 
-        if (baseAddress.toString() !== givenBaseAddress) {
-            throw "invalid base address in keyFile";
+        if (store.baseAddress.toString() !== givenBaseAddress) {
+            throw `invalid base address in keyFile. Expected ${givenBaseAddress} but got ${baseAddress.toString()}`;
         }
 
-        return entropy;
+        return store;
     }
 
-    // returns encrypted JSON
-    static async Encrypt(entropy, password) {
-        const baseAddress = KeyStore.FromEntropy(entropy).baseAddress;
+    // transforms (store + password) -> JSON
+    static async Encrypt(store, password) {
+        const baseAddress = store.baseAddress;
 
         // generate new salt, as hex string
         let salt = new Buffer.from(crypto.randomBytes(16), 'utf8')
@@ -116,7 +120,7 @@ class KeyFile {
         })
 
         const aesCipher = aes256gcm(key.hash);
-        let [encrypted, aesNonce] = aesCipher.encrypt(entropy)
+        let [encrypted, aesNonce] = aesCipher.encrypt(Buffer.from(store.entropy, 'hex'))
 
         return {
             baseAddress: baseAddress.toString(),
