@@ -6,4 +6,5 @@ module.exports = {
     model: require('./model'),
     wallet: require('./wallet'),
     ...require('./utils'),
+    ...require('./provider')
 }

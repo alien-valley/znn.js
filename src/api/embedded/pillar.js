@@ -1,49 +1,50 @@
 const {AccountBlock, znnZts, emptyZts, PillarAddress, qsrZts} = require("../../model");
 const {CommonABI, PillarABI} = require("../../embedded");
+const {provider} = require("../../provider");
 
 /* This API call will return the current QSR cost for registering a new Pillar. */
-const getQsrRegistrationCost = (client) => {
-    return client.request({method: 'embedded.pillar.getQsrRegistrationCost', params: []});
+const getQsrRegistrationCost = () => {
+    return provider.client.request({method: 'embedded.pillar.getQsrRegistrationCost', params: []});
 }
 
 /* This API call will return information about the availability of a name for a Pillar. */
-const checkNameAvailability = (client, name) => {
-    return client.request({method: 'embedded.pillar.checkNameAvailability', params: [name]});
+const checkNameAvailability = (name) => {
+    return provider.client.request({method: 'embedded.pillar.checkNameAvailability', params: [name]});
 }
 
 /* This API call will return the list of Pillars in the network with additional information. */
-const getAll = (client, pageIndex, pageSize) => {
-    return client.request({method: 'embedded.pillar.getAll', params: [pageIndex, pageSize]});
+const getAll = (pageIndex, pageSize) => {
+    return provider.client.request({method: 'embedded.pillar.getAll', params: [pageIndex, pageSize]});
 }
 
 /* This API call will return all the Pillars registered by an address. */
-const getByOwner = (client, pillarAddress) => {
-    return client.request({method: 'embedded.pillar.getByOwner', params: [pillarAddress]});
+const getByOwner = (pillarAddress) => {
+    return provider.client.request({method: 'embedded.pillar.getByOwner', params: [pillarAddress]});
 }
 
 /* This API call will return information about the Pillar with the specified name. */
-const getByName = (client, name) => {
-    return client.request({method: 'embedded.pillar.getByName', params: [name]});
+const getByName = (name) => {
+    return provider.client.request({method: 'embedded.pillar.getByName', params: [name]});
 }
 
 /* This API call will return the total number of delegations for a particular Pillar. */
-const getDelegatedPillar = (client, pillarAddress) => {
-    return client.request({method: 'embedded.pillar.getDelegatedPillar', params: [pillarAddress]});
+const getDelegatedPillar = (pillarAddress) => {
+    return provider.client.request({method: 'embedded.pillar.getDelegatedPillar', params: [pillarAddress]});
 }
 
 /* This API call will return the amount of QSR deposited that can be used to create a Pillar. */
-const getDepositedQsr = (client, pillarAddress) => {
-    return client.request({method: 'embedded.pillar.getDepositedQsr', params: [pillarAddress]});
+const getDepositedQsr = (pillarAddress) => {
+    return provider.client.request({method: 'embedded.pillar.getDepositedQsr', params: [pillarAddress]});
 }
 
 /* This API call will return the uncollected reward for the specified pillar. */
-const getUncollectedReward = (client, pillarAddress) => {
-    return client.request({method: 'embedded.pillar.getUncollectedReward', params: [pillarAddress]});
+const getUncollectedReward = (pillarAddress) => {
+    return provider.client.request({method: 'embedded.pillar.getUncollectedReward', params: [pillarAddress]});
 }
 
 /* This API call will return the uncollected reward for the specified pillar. */
-const getFrontierRewardByPage = (client, pillarAddress, pageIndex, pageSize) => {
-    return client.request({
+const getFrontierRewardByPage = (pillarAddress, pageIndex, pageSize) => {
+    return provider.client.request({
         method: 'embedded.pillar.getFrontierRewardByPage',
         params: [pillarAddress, pageIndex, pageSize]
     });

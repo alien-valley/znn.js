@@ -1,22 +1,25 @@
-const subscribeTo = async (client, params) => {
+
+const {provider} = require("../provider");
+
+const subscribeTo = async (params) => {
     if (!client.isWS) {
         throw "client must be a WebSocket connection"
     }
     const response = client.request({method: "ledger.subscribe", params});
-    return client.subscriptions.newUpdateStream(await response)
+    return provider.client.subscriptions.newUpdateStream(await response)
 }
 
-const toMomentums = async (client) => {
-    return subscribeTo(client, ['momentums'])
+const toMomentums = async () => {
+    return subscribeTo(['momentums'])
 };
-const toAllAccountBlocks = async (client) => {
-    return subscribeTo(client, ['allAccountBlocks'])
+const toAllAccountBlocks = async () => {
+    return subscribeTo(['allAccountBlocks'])
 };
-const toAccountBlocksByAddress = async (client, address) => {
-    return subscribeTo(client, ['accountBlocksByAddress', address.toString()])
+const toAccountBlocksByAddress = async (address) => {
+    return subscribeTo(['accountBlocksByAddress', address.toString()])
 };
-const toUnreceivedAccountBlocksByAddress = async (client, address) => {
-    return subscribeTo(client, ['unreceivedAccountBlocksByAddress', address.toString()])
+const toUnreceivedAccountBlocksByAddress = async (address) => {
+    return subscribeTo(['unreceivedAccountBlocksByAddress', address.toString()])
 };
 
 module.exports = {

@@ -1,19 +1,20 @@
 const {AccountBlock, znnZts, emptyZts, StakeAddress} = require("../../model");
 const {CommonABI, StakeABI} = require("../../embedded");
+const {provider} = require("../../provider");
 
 /* This API call will return staking information for a particular address */
-const getEntriesByAddress = (client, address, pageIndex, pageSize) => {
-    return client.request({method: 'embedded.stake.getEntriesByAddress', params:[address.toString(), pageIndex, pageSize]});
+const getEntriesByAddress = (address, pageIndex, pageSize) => {
+    return provider.client.request({method: 'embedded.stake.getEntriesByAddress', params:[address.toString(), pageIndex, pageSize]});
 }
 
 /* This API call will return staking information for a particular address */
-const getUncollectedReward = (client, address) => {
-    return client.request({method: 'embedded.stake.getUncollectedReward', params:[address.toString()]});
+const getUncollectedReward = (address) => {
+    return provider.client.request({method: 'embedded.stake.getUncollectedReward', params:[address.toString()]});
 }
 
 /* This API call will return reward information the specified stake for a specified range of pages. */
-const getFrontierRewardByPage = (client, address, pageIndex, pageSize) => {
-    return client.request({method: 'embedded.stake.getFrontierRewardByPage', params:[address.toString(), pageIndex, pageSize]});
+const getFrontierRewardByPage = (address, pageIndex, pageSize) => {
+    return provider.client.request({method: 'embedded.stake.getFrontierRewardByPage', params:[address.toString(), pageIndex, pageSize]});
 }
 
 const stake = ({durationInSec, amount}) => {

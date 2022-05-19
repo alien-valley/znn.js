@@ -1,29 +1,30 @@
 const {AccountBlock, AcceleratorAddress, emptyZts, znnZts} = require("../../model");
 const {AcceleratorABI} = require("../../embedded");
+const {provider} = require("../../provider");
 
 /* Get all. */
-const getAll = (client, pageIndex, pageSize) => {
-    return client.request({method: 'embedded.accelerator.getAll', params:[pageIndex, pageSize]});
+const getAll = (pageIndex, pageSize) => {
+    return provider.client.request({method: 'embedded.accelerator.getAll', params:[pageIndex, pageSize]});
 }
 
 /* Get a single project by a given ID. */
-const getProjectById = (client, projectID) => {
-    return client.request({method: 'embedded.accelerator.getProjectById', params:[projectID]});
+const getProjectById = (projectID) => {
+    return provider.client.request({method: 'embedded.accelerator.getProjectById', params:[projectID]});
 }
 
 /* Get a single project by a given ID. */
-const getPhaseById = (client, phaseID) => {
-    return client.request({method: 'embedded.accelerator.getPhaseById', params:[phaseID]});
+const getPhaseById = (phaseID) => {
+    return provider.client.request({method: 'embedded.accelerator.getPhaseById', params:[phaseID]});
 }
 
 /* Get a single project by a given ID. */
-const getPillarVotes = (client, name, hashes) => {
-    return client.request({method: 'embedded.accelerator.getPillarVotes', params:[name, hashes]});
+const getPillarVotes = (name, hashes) => {
+    return provider.client.request({method: 'embedded.accelerator.getPillarVotes', params:[name, hashes]});
 }
 
 /* Get a single project by a given ID. */
-const getVoteBreakdown = (client, hash) => {
-    return client.request({method: 'embedded.accelerator.getVoteBreakdown', params:[hash]});
+const getVoteBreakdown = (hash) => {
+    return provider.client.request({method: 'embedded.accelerator.getVoteBreakdown', params:[hash]});
 }
 
 const createProject = ({name, description, url, znnFundsNeeded, qsrFundsNeeded}) => {
