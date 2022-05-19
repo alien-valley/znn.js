@@ -1,38 +1,74 @@
-const {fastForwardBlock, wallet, api, client: c} = require("../src");
+const {Command} = require('commander');
+const {fastForwardBlock, wallet, api, client: c, provider} = require("../src");
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-async function main() {
-    const args = process.argv.slice(2);
-    let password = args[1];
-    let name = args[2];
-    let store;
-    let keyPair, address;
-    let response, entry;
+let options, args;
+let store, keyPair, address;
 
-    // const client = newClient('http://139.177.178.226:35997')
-    const client = c.newClient('ws://139.177.178.226:35998')
+async function setupKeyPair() {
+    if (('passphrase' in options) && ('keyStore' in options)) {
+        store = await wallet.manager.read(options.passphrase, options.keyStore)
+        keyPair = store.getKeyPair()
+        address = keyPair.address
+        provider.setKeyPair(keyPair)
+    }
+}
+
+async function setupNode() {
+    const client = c.newClient(options.url)
+    provider.setClient(client)
+}
+
+const helpText = `Commands
+  plasma.get
+  plasma.list
+  plasma.fuse beneficiary amount
+  plasma.cancel id
+  listen.momentums
+  listen.allAccountBlocks
+  wallet.decrypt
+  wallet.new [name]
+  wallet.list`
+
+async function main() {
+    const program = new Command();
+
+    program
+        .name('znn-cli.js')
+        .description('CLI for interacting with Zenon ecosystem')
+        .option(`-p, --passphrase <passphrase>`, 'use this passphrase for the keyStore')
+        .option(`-k, --keyStore <keyStore>`, 'select the local keyStore')
+        .option(`-u, --url <url>`, 'websocket/http znnd connection URL with a port', 'ws://139.177.178.226:35998')
+        .addHelpText('after', `\n${helpText}`);
+
+    program.parse();
+    options = program.opts()
+    args = program.args;
+
+    await setupNode()
+    await setupKeyPair()
+
+    let response, entry;
 
     switch (args[0]) {
         case 'plasma.get':
-            if (args.length !== 3) {
-                throw "invalid usage; plasma.get 'password' path"
+            if (args.length !== 1) {
+                throw "invalid usage; plasma.get"
             }
-            address = (await decrypt(password, path)).address
 
-            response = await api.embedded.plasma.get(client, address)
+            response = await api.embedded.plasma.get(address)
             console.log(`Plasma for account ${address.toString()}, ${response.currentPlasma}`);
             break;
 
         case 'plasma.list':
-            if (args.length !== 3) {
-                throw "invalid usage; plasma.list 'password' path"
+            if (args.length !== 1) {
+                throw "invalid usage; plasma.list"
             }
-            address = (await decrypt(password, path)).address
 
-            response = await api.embedded.plasma.getEntriesByAddress(client, address, 0, 10)
+            response = await api.embedded.plasma.getEntriesByAddress(address, 0, 10)
             console.log(`Plasma entries for account ${address.toString()} - number ${JSON.stringify(response.count)}`);
             for (entry of response.list) {
                 console.log(entry.beneficiary, entry.qsrAmount, entry.id)
@@ -40,28 +76,26 @@ async function main() {
             break;
 
         case 'plasma.fuse':
-            if (args.length !== 5) {
-                throw "invalid usage; plasma.fuse 'password' path beneficiary amount"
+            if (args.length !== 3) {
+                throw "invalid usage; plasma.fuse beneficiary amount"
             }
-            keyPair = await decrypt(password, path)
 
             let beneficiary = args[3];
             let amount = args[4]
 
-            response = await fastForwardBlock(client, keyPair, api.embedded.plasma.fuse({beneficiary, amount: parseInt(amount)}))
+            response = await fastForwardBlock(api.embedded.plasma.fuse({beneficiary, amount: parseInt(amount)}))
 
             console.log(`Fused plasma for ${beneficiary}; ${JSON.stringify(response)}`);
             break;
 
         case 'plasma.cancel':
-            if (args.length !== 4) {
-                throw "invalid usage; plasma.fuse 'password' path id"
+            if (args.length !== 2) {
+                throw "invalid usage; plasma.fuse id"
             }
-            keyPair = await decrypt(password, path)
 
             let id = args[3];
 
-            response = await fastForwardBlock(client, keyPair, api.embedded.plasma.cancel({id}))
+            response = await fastForwardBlock(api.embedded.plasma.cancel({id}))
 
             console.log(`Cancel fuse entry with ID ${id}; ${JSON.stringify(response)}`);
             break;
@@ -71,13 +105,13 @@ async function main() {
                 throw "invalid usage; listen.momentums"
             }
 
-            response = await api.subscribe.toMomentums(client)
+            response = await api.subscribe.toMomentums()
             response.onNotification((data) => {
                 console.log(`Received new Momentum! Height:${data[0].height} Hash:${data[0].hash} CurrentTime:${new Date()}`)
             })
 
             // never return since the
-            for (;;) {
+            for (; ;) {
                 await sleep(1000)
             }
 
@@ -86,7 +120,7 @@ async function main() {
                 throw "invalid usage; listen.allAccountBlocks"
             }
 
-            response = await api.subscribe.toAllAccountBlocks(client)
+            response = await api.subscribe.toAllAccountBlocks()
             response.onNotification((data) => {
                 for (const block of data) {
                     console.log(`Received new Account Block! Address:${block.address} Height:${block.height} Hash:${block.hash} CurrentTime:${new Date()}`)
@@ -94,23 +128,25 @@ async function main() {
             })
 
             // never return since the
-            for (;;) {
+            for (; ;) {
                 await sleep(1000)
             }
 
         case 'wallet.decrypt':
-            if (args.length !== 3) {
-                throw "invalid usage; decrypt 'password' name"
+            if (args.length !== 1) {
+                throw "invalid usage; decrypt"
             }
 
-            store = await wallet.manager.read(password, name)
-            console.log(`Decrypted key-file with address ${store.baseAddress.toString()}`);
+            console.log(`Decrypted key-file with address ${address.toString()}`);
             break;
 
         case 'wallet.new':
-            if (args.length !== 3 && args.length !== 2) {
-                throw "invalid usage; wallet.new 'password' name"
+            if (args.length !== 1 && args.length !== 2) {
+                throw "invalid usage; wallet.new [name]"
             }
+
+            let password = options.passphrase
+            let name = args[1]
 
             store = wallet.KeyStore.Random()
             // set a name if none was provided
@@ -122,22 +158,16 @@ async function main() {
             break;
 
         case 'wallet.list':
+            if (args.length !== 1) {
+                throw "invalid usage; wallet.list"
+            }
+
             console.log(wallet.manager.list())
             break;
 
         default:
-            console.log('unknown command');
-            console.log('');
-            console.log('Options:');
-            console.log("  plasma.get 'password' path");
-            console.log("  plasma.list 'password' path");
-            console.log("  plasma.fuse 'password' path beneficiary amount");
-            console.log("  plasma.cancel 'password' id");
-            console.log("  listen.momentums");
-            console.log("  listen.allAccountBlocks");
-            console.log("  wallet.decrypt 'password' name");
-            console.log("  wallet.new 'password' [name]");
-            console.log("  wallet.list");
+            console.log(`unknown command "${args[0]}"\n`);
+            console.log(helpText);
     }
 }
 
