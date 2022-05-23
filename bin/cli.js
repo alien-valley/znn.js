@@ -1,5 +1,5 @@
 const {Command} = require('commander');
-const {fastForwardBlock, wallet, api, client: c, provider} = require("../src");
+const {fastForwardBlock, wallet, api, client, provider} = require("../src");
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -18,8 +18,7 @@ async function setupKeyPair() {
 }
 
 async function setupNode() {
-    const client = c.newClient(options.url)
-    provider.setClient(client)
+    provider.setClient(client.newClient(options.url))
 }
 
 const helpText = `Commands
@@ -51,9 +50,44 @@ async function main() {
     await setupNode()
     await setupKeyPair()
 
-    let response, entry;
+    let response, entry, id;
 
     switch (args[0]) {
+        case 'accelerator.all':
+            if (args.length !== 1) {
+                throw "invalid usage; accelerator.all"
+            }
+
+            response = await api.embedded.accelerator.getAll(0, 1000)
+            for (let project of response.list) {
+                console.log(`id:${project.id} name:${project.name}`)
+            }
+            break;
+
+        case `accelerator.details`:
+            if (args.length !== 2) {
+                throw "invalid usage; accelerator.details ID"
+            }
+
+            id = args[1]
+            const project = await api.embedded.accelerator.getProjectById(id)
+            const projectStatusName = [  "voting", "active", "paid", "closed", "completed"]
+            console.log("Project Details")
+            console.log(`${project.name}\n${project.description}\nStatus: "${projectStatusName[project.status]}"\n`)
+
+            const allPillars = await api.embedded.pillar.getAll(0, 200)
+            const voteName = ['yes', 'no', 'abstain']
+
+            console.log("Pillar Votes")
+            for (let pillar of allPillars.list) {
+                response = await api.embedded.accelerator.getPillarVotes(pillar.name, [id])
+                if (response[0]) {
+                    console.log(`${voteName[response[0].vote]} ${response[0].name}`)
+                }
+            }
+
+            break;
+
         case 'plasma.get':
             if (args.length !== 1) {
                 throw "invalid usage; plasma.get"
@@ -93,7 +127,7 @@ async function main() {
                 throw "invalid usage; plasma.fuse id"
             }
 
-            let id = args[3];
+            id = args[3];
 
             response = await fastForwardBlock(api.embedded.plasma.cancel({id}))
 
