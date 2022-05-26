@@ -73,7 +73,10 @@ async function main() {
             const project = await api.embedded.accelerator.getProjectById(id)
             const projectStatusName = [  "voting", "active", "paid", "closed", "completed"]
             console.log("Project Details")
-            console.log(`${project.name}\n${project.description}\nStatus: "${projectStatusName[project.status]}"\n`)
+            console.log(`${project.name}\n${project.description}\nStatus: "${projectStatusName[project.status]}"`)
+            console.log(`Phases: ${project.phaseIds}`)
+
+            console.log("")
 
             const allPillars = await api.embedded.pillar.getAll(0, 200)
             const voteName = ['yes', 'no', 'abstain']
@@ -87,6 +90,38 @@ async function main() {
             }
 
             break;
+
+        case `accelerator.phaseDetails`: {
+            if (args.length !== 2) {
+                throw "invalid usage; accelerator.phaseDetails ID"
+            }
+
+            id = args[1]
+            const breakdown = (await api.embedded.accelerator.getPhaseById(id))
+            const phase = breakdown.phase
+            const votes = breakdown.votes
+
+            const projectStatusName = [  "voting", "active", "paid", "closed", "completed"]
+
+            console.log("Phase Details")
+            console.log(phase.name)
+            console.log(phase.description)
+            console.log(`Status: ${projectStatusName[phase.status]}`)
+            console.log(`Yes: ${votes.yes} No: ${votes.no} Abstain: ${votes.total - votes.yes - votes.no}`)
+
+            const allPillars = await api.embedded.pillar.getAll(0, 200)
+            const voteName = ['yes', 'no', 'abstain']
+
+            console.log("Pillar Votes")
+            for (let pillar of allPillars.list) {
+                response = await api.embedded.accelerator.getPillarVotes(pillar.name, [id])
+                if (response[0]) {
+                    console.log(`${voteName[response[0].vote]} ${response[0].name}`)
+                }
+            }
+
+            break;
+        }
 
         case 'plasma.get':
             if (args.length !== 1) {
