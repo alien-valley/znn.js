@@ -1,5 +1,5 @@
-const path = require('node:path');
-const fs = require('node:fs');
+const path = require('path');
+const fs = require('fs');
 const {KeyFile} = require("./keyFile");
 
 function getZenonPath() {
@@ -42,6 +42,17 @@ class NodeWalletManager {
     }
 }
 
+// TODO: @vonsbak fix this in a nicer way
+// returns a valid NodeWalletManager instance in node environment
+// returns null in a browser
+function NewNodeWalletManager() {
+    if (process.platform === undefined) {
+        return null
+    }
+
+    return new NodeWalletManager(getWalletPath())
+}
+
 module.exports = {
-    manager: new NodeWalletManager(getWalletPath()),
+    manager: NewNodeWalletManager(),
 }

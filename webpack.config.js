@@ -27,7 +27,8 @@ module.exports = {
             Buffer: false,
             process: false,
             stream: require.resolve("stream-browserify"),
-            buffer: require.resolve("buffer")
+            buffer: require.resolve("buffer"),
+            crypto: require.resolve("crypto-browserify")
         },
     },
     module: {
